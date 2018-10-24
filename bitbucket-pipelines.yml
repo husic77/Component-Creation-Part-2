@@ -5,7 +5,7 @@ pipelines:
   default:
     - step:
         script:
-          - export APP_IMAGE={$APP_IMAGE}
+          - export APP_IMAGE=$APP_IMAGE
           - docker build . --tag=$APP_IMAGE
           - docker images
           - docker -v
@@ -17,7 +17,7 @@ pipelines:
     '*':
       - step:
           script:
-          - export APP_IMAGE={$APP_IMAGE}
+          - export APP_IMAGE=$APP_IMAGE
           - docker build . --tag=$APP_IMAGE
           - docker images          
           - ./kbc_tests.sh
