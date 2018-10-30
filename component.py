@@ -4,13 +4,7 @@ Created on 10. 10. 2018
 @author: daivd esner
 '''
 from kbc.env_handler import KBCEnvHandler
-from gemius.prism_ex_service import PrismExService
-from gemius import prism_ex_service
 import logging
-import os
-import pytz
-from datetime import datetime
-from datetime import timedelta
 
 KEY_PROJECT_ID = 'project_id'
 KEY_API_TOKEN = '#api_token'
@@ -45,7 +39,7 @@ class Component(KBCEnvHandler):
         logging.info('Loading configuration...')
         self.validateConfig()
 
-        params = self.cfg_params
+        params = self.cfg_params # noqa
 
 
 """
