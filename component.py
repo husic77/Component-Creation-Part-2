@@ -1,7 +1,7 @@
 '''
 Created on 10. 10. 2018
 
-@author: esner
+@author: daivd esner
 '''
 from kbc.env_handler import KBCEnvHandler
 from gemius.prism_ex_service import PrismExService
