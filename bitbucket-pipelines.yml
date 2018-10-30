@@ -9,7 +9,7 @@ pipelines:
           - docker build . --tag=$APP_IMAGE
           - docker images
           - docker -v
-          #docker run $APP_IMAGE flake8
+          - docker run $APP_IMAGE flake8 config=./deployment/flake8.cfg
           - echo "Running unit-tests..."
           - docker run $APP_IMAGE python -m unittest discover
 
@@ -20,5 +20,5 @@ pipelines:
           - export APP_IMAGE=$APP_IMAGE
           - docker build . --tag=$APP_IMAGE
           - docker images          
-          - ./kbc_tests.sh
-          - ./deploy.sh
+          - ./deployment/kbc_tests.sh
+          - ./deployment/deploy.sh
