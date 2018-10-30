@@ -23,13 +23,8 @@ APP_VERSION = '0.0.1'
 
 class Component(KBCEnvHandler):
 
-    def __init__(self):
+    def __init__(self, debug=False):
         KBCEnvHandler.__init__(self, MANDATORY_PARS)
-
-    def run(self, debug=False):
-        '''
-        Main execution code
-        '''
         # override debug from config
         if(self.cfg_params.get('debug')):
             debug = True
@@ -37,8 +32,17 @@ class Component(KBCEnvHandler):
         self.set_default_logger('DEBUG' if debug else 'INFO')
         logging.info('Running version %s', APP_VERSION)
         logging.info('Loading configuration...')
-        self.validateConfig()
+        
+        try:
+            self.validateConfig()
+        except ValueError as e:
+            logging.error(e)
+            exit(1)
 
+    def run(self, debug=False):
+        '''
+        Main execution code
+        '''
         params = self.cfg_params # noqa
 
 
