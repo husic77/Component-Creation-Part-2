@@ -1,28 +1,24 @@
 {
 	"type": "object",
-	"title": "Gemius Prism extractor configuration",
+	"title": "extractor configuration",
 	"required": [
 		"project_id",
 		"#api_token",
-		"structure_id",
-		"vsender_type",
 		"period_from",
 		"period_to",
 		"relative_period",
 		"metrics",
-		"custom_metrics",
-		"node_filters",
 		"backfill_mode"
 	],
 	"properties": {
 		"project_id": {
 			"type": "string",
-			"title": "Gemius Prism project ID",
+			"title": "Project ID",
 			"propertyOrder": 100
 		},
 		"#api_token": {
 			"type": "string",
-			"title": "Gemius Prism API token",
+			"title": "API token",
 			"format": "password",
 			"propertyOrder": 200
 		},
@@ -44,7 +40,7 @@
 			"description": "Relative period in format: '5 hours ago', 'yesterday','3 days ago', '4 months ago', '2 years ago', 'today'. Overrides `from` and `to` parameters.",
 			"propertyOrder": 450
 		},
-"backfill_mode": {
+		"backfill_mode": {
 			"type": "number",
 			"title": "Backfill mode",
 			"description": "If backfill mode is enabled, each consecutive run of the component will continue from the end of the last run period, until current date is reached. The From and To date parameters are used to define Start date of the back-fill and also relative window of each run.",
@@ -61,45 +57,6 @@
 				]
 			}
 		},
-		"structure_id": {
-			"type": "string",
-			"title": "Structure ID",
-			"description": "Gemius Prism structure ID [Try 1 if not sure]",
-			"propertyOrder": 460
-		},
-		"vsender_type": {
-			"enum": [
-				"thirdpartycookie",
-				"browserid"
-			],
-			"type": "string",
-			"title": "Vsender Type",
-			"description": "",
-			"default": "browserid",
-			"propertyOrder": 470
-		},
-		"node_filters": {
-			"type": "array",
-			"description": "Required node path as found in URL structure. Without the end node - e.g. portal.cz/show/myshow",
-			"propertyOrder": 500,
-			"items": {
-				"format": "grid",
-				"type": "string",
-				"title": "Node",
-				"required": [
-					"node"
-				],
-				"properties": {
-					"node": {
-						"type": "string",
-						"title": "Node",
-						"description": "Required node path as found in URL structure. Without the end node - e.g. portal.cz/show/myshow",
-						"propertyOrder": 1000
-					}
-				}
-			},
-			"title": "Required Nodes"
-		},
 		"metrics": {
 			"type": "array",
 			"items": {
@@ -115,62 +72,17 @@
 						"enum": [
 							"NoVt",
 							"TotTm",
-							"NoPV",
-							"NoBc",
-							"TotC",
-							"TotRv",
-							"NoEn",
-							"NoEx",
-							"NoC",
-							"NoVr",
-							"NetSV",
-							"StTm",
-							"AvVpVr",
-							"AvVIntr",
-							"AvVL",
-							"ROI",
-							"TotPr",
-							"AvCt",
-							"AvRv",
-							"CRt",
-							"VrTmAv",
-							"PVTmAv",
-							"VTmAv",
-							"BR",
-							"NoA",
-							"NoRpVr",
-							"EnR",
-							"ExR",
-							"AvNetSVVr",
-							"NoCVr",
-							"CVrRt",
-							"StNoVid",
-							"AvStNoViV",
-							"AvStTmVid",
-							"StRt",
-							"GrossSV",
-							"SpotSV",
-							"NetST",
-							"SpotST",
-							"CNoEv",
-							"CNoUVal",
-							"CNoPV",
-							"CNoA",
-							"CNoVt",
-							"CSuVal"
+							"NoPV"
 						],
 						"type": "string",
 						"title": "Metric",
-						"description": "Sampled report metric",
+						"description": "Report metric",
 						"propertyOrder": 1000
 					},
 					"modificator": {
 						"enum": [
 							"none",
-							"change",
-							"share",
-							"share_in_total",
-							"change_in_percentage"
+							"change"
 						],
 						"type": "string",
 						"title": "Mdificator",
@@ -180,44 +92,8 @@
 					}
 				}
 			},
-			"title": "Sampled report metrics",
-"description":"Choose metrics to download or leave empty to get all supported metrics."
-		},
-		"custom_metrics": {
-			"type": "array",
-			"items": {
-				"format": "grid",
-				"type": "object",
-				"title": "Custom Metric",
-				"required": [
-					"metricId",
-					"modificator"
-				],
-				"properties": {
-					"metricId": {
-						"type": "number",
-						"title": "Custom Metric ID",
-						"description": "Custom metric ID.",
-						"default": 0,
-						"propertyOrder": 1000
-					},
-					"modificator": {
-						"enum": [
-							"none",
-							"change",
-							"share",
-							"share_in_total",
-							"change_in_percentage"
-						],
-						"type": "string",
-						"title": "Modificator",
-						"description": "Metric modificator",
-						"default": "daily",
-						"propertyOrder": 2000
-					}
-				}
-			},
-			"title": "Sampled report custom metrics"
+			"title": "Report metrics",
+			"description": "Choose metrics to download or leave empty to get all supported metrics."
 		}
 	}
 }
