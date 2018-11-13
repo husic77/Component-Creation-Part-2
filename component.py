@@ -32,7 +32,7 @@ class Component(KBCEnvHandler):
         self.set_default_logger('DEBUG' if debug else 'INFO')
         logging.info('Running version %s', APP_VERSION)
         logging.info('Loading configuration...')
-        
+
         try:
             self.validateConfig()
         except ValueError as e:
