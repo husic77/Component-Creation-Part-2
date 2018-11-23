@@ -1,3 +1,8 @@
+**0.1.1**
+
+- fix requirements
+- add src folder to path for tests
+
 **0.1.0**
 
 - src folder structure
