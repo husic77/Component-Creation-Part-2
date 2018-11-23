@@ -7,6 +7,7 @@ import unittest
 
 from component import Component
 
+
 class TestComponent(unittest.TestCase):
 
 
