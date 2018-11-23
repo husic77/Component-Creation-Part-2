@@ -1,1 +1,0 @@
-git+https://bitbucket.org/kds_consulting_team/keboola-python-util-lib.git@0.0.2#egg=kbc-0.0.2
