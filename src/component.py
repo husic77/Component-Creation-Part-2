@@ -1,7 +1,6 @@
 '''
-Created on 10. 10. 2018
+Template Component main class.
 
-@author: daivd esner
 '''
 
 
