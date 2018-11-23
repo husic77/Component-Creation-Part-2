@@ -1,4 +1,9 @@
-**0.0.3**
+**0.1.0**
+
+- src folder structure
+- remove dependency on handler lib - import the code directly to enable modifications until its released
+
+**0.0.2**
 
 - add dependency to base lib
 - basic tests
