@@ -1,8 +1,8 @@
-'''
+"""
 Created on 5. 10. 2018
 
 @author: esner
-'''
+"""
 import requests
 import logging
 from requests.adapters import HTTPAdapter
@@ -11,10 +11,8 @@ from requests.packages.urllib3.util.retry import Retry
 
 class HttpClientBase:
     """
-    Base class for implementing a single endpoint related to a single entities
+    Base class for implementing a single Http client related to some REST API.
 
-    Attributes:
-        base_url (str): The base URL for this endpoint.
     """
 
     def __init__(self, base_url, max_retries=10, backoff_factor=0.3,
@@ -22,8 +20,18 @@ class HttpClientBase:
         """
         Create an endpoint.
 
-        Args
-            root_url (str): Root url of API.
+          Args:
+            base_url: The base URL for this endpoint. e.g. https://exampleservice.com/api_v1/
+            max_retries: Total number of retries to allow.
+            backoff_factor:  A back-off factor to apply between attempts.
+            status_forcelist:  A set of HTTP status codes that we should force a retry on. e.g. [500,502]
+            default_http_header (dict): Default header to be sent with each request
+                                        eg. {'Authorization': 'Bearer ' + token,
+                                                       'Content-Type' : 'application/json',
+                                                       'Accept' : 'application/json'}
+            auth: Default Authentication tuple or object to attach to (from  requests.Session().auth).
+                  eg. auth = (user, password)
+            default_params: default parameters to be sent with each request
 
         """
         if not base_url:
@@ -64,7 +72,7 @@ class HttpClientBase:
             **kwargs: Key word arguments to pass to the get requests.get
 
         Returns:
-            r (requests.Response): object
+            r (requests.Response): :class:`Response <Response>` object.
 
         Raises:
             requests.HTTPError: If the API request fails.
@@ -102,7 +110,7 @@ class HttpClientBase:
             **kwargs: Key word arguments to pass to the post request.
 
         Returns:
-            body:
+            Response: Returns :class:`Response <Response>` object.
 
         Raises:
             requests.HTTPError: If the API request fails.
@@ -138,7 +146,7 @@ class HttpClientBase:
             **kwargs: Key word arguments to pass to the post request.
 
         Returns:
-            body: json reposonse
+            body: json reposonse json-encoded content of a response
 
         Raises:
             requests.HTTPError: If the API request fails.
