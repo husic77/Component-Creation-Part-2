@@ -31,7 +31,7 @@ class HttpClientBase:
                                                        'Accept' : 'application/json'}
             auth: Default Authentication tuple or object to attach to (from  requests.Session().auth).
                   eg. auth = (user, password)
-            default_params: default parameters to be sent with each request
+            default_params (dict): default parameters to be sent with each request eg. {'param':'value'}
 
         """
         if not base_url:
@@ -107,7 +107,11 @@ class HttpClientBase:
 
         Args:
             *args: Positional arguments to pass to the post request.
+               Accepts supported params in requests.sessions.Session#request
             **kwargs: Key word arguments to pass to the post request.
+               Accepts supported params in requests.sessions.Session#request
+               eg. params = {'locId':'1'}, header = {some additional header}
+               parameters and headers are appended to the default ones
 
         Returns:
             Response: Returns :class:`Response <Response>` object.
@@ -143,7 +147,12 @@ class HttpClientBase:
 
         Args:
             *args: Positional arguments to pass to the post request.
+               Accepts supported params in requests.sessions.Session#request
             **kwargs: Key word arguments to pass to the post request.
+               Accepts supported params in requests.sessions.Session#request
+               eg. params = {'locId':'1'}, header = {some additional header}
+               parameters and headers are appended to the default ones
+
 
         Returns:
             body: json reposonse json-encoded content of a response
