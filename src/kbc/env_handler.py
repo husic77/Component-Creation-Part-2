@@ -22,8 +22,22 @@ DEFAULT_ENCLOSURE = '"'
 
 
 class KBCEnvHandler:
+    """
+    Class handling standard tasks for KBC component manipulation i.e. config load, validation
+
+    It contains some useful methods helping with boilerplate tasks.
+    """
+
     def __init__(self, mandatory_params, data_path=None):
-        # fetch data folder from ENV by default
+        """
+
+        Args:
+            mandatory_params (array(str)): Array of parameter names that needs to be present in the config.json.
+            May be nested, see :func:`KBCEnvHandler.validateConfig()` docs for more details.
+
+            data_path (str): optional path to data folder - if not specified data folder if fetched from KBC_DATADIR
+            env variable by default.
+        """
         if not data_path:
             data_path = os.environ.get('KBC_DATADIR')
 
@@ -37,14 +51,46 @@ class KBCEnvHandler:
 
         self._mandatory_params = mandatory_params
 
-# ==============================================================================
+    # ==============================================================================
 
     def validateConfig(self):
-        '''
-        Validates config based on provided mandatory params.
-        Parameters can be grouped as arrays [Par1,Par2] => at least one of the pars has to be present
-        [par1,[par2,par3]] => either par1 OR both par2 and par3 needs to be present
-        '''
+        """
+        Validates config based on provided mandatory parameters.
+        All provided parameters must be present in config to pass.
+        ex1.:
+        par1 = 'par1'
+        par2 = 'par2'
+        mandatory_params = [par1, par2]
+        Validation will fail when one of the above parameters is not found
+
+        Two levels of nesting:
+        Parameters can be grouped as arrays par3 = [groupPar1, groupPar2] => at least one of the pars has to be present
+        ex2.
+        par1 = 'par1'
+        par2 = 'par2'
+        par3 = 'par3'
+        groupPar1 = 'groupPar1'
+        groupPar2 = 'groupPar2'
+        group1 = [groupPar1, groupPar2]
+        group3 = [par3, group1]
+        mandatory_params = [par1, par2, group1]
+
+        Folowing logical expression is evaluated:
+        Par1 AND Par2 AND (groupPar1 OR groupPar2)
+
+        ex3
+        par1 = 'par1'
+        par2 = 'par2'
+        par3 = 'par3'
+        groupPar1 = 'groupPar1'
+        groupPar2 = 'groupPar2'
+        group1 = [groupPar1, groupPar2]
+        group3 = [par3, group1]
+        mandatory_params = [par1, par2, group3]
+
+        Following logical expression is evaluated:
+        par1 AND par2 AND (par3 OR (groupPar1 AND groupPar2))
+        """
         parameters = self.cfg_params
         missing_fields = []
         for field in self._mandatory_params:
@@ -92,10 +138,19 @@ class KBCEnvHandler:
                 'Specified input mapping [{}] does not exist'.format(table_name))
         return table[0]
 
-
-# ================================= Logging ==============================
+    # ================================= Logging ==============================
 
     def set_default_logger(self, log_level='INFO'):  # noqa: E301
+        """
+        Sets default console logger.
+
+        Args:
+            log_level: logging level, default: 'INFO'
+
+        Returns: logging object
+
+        """
+
         class InfoFilter(logging.Filter):
             def filter(self, rec):
                 return rec.levelno in (logging.DEBUG, logging.INFO)
@@ -114,6 +169,14 @@ class KBCEnvHandler:
         return logger
 
     def get_state_file(self):
+        """
+
+        Return dict representation of state file or nothing if not present
+
+        Returns:
+            dict:
+
+        """
         logging.getLogger().info('Loading state file..')
         state_file_path = os.path.join(self.data_path, 'in', 'state.json')
         if not os.path.isfile(state_file_path):
@@ -129,6 +192,11 @@ class KBCEnvHandler:
             )
 
     def write_state_file(self, state_dict):
+        """
+        Stores state file.
+        Args:
+            state_dict:
+        """
         if not isinstance(state_dict, dict):
             raise TypeError('Dictionary expected as a state file datatype!')
 
@@ -141,12 +209,14 @@ class KBCEnvHandler:
         Creates prepares sliced tables from all files in DATA_PATH/out/tables/{folder_name} - i.e. removes all headers
         and creates single manifest file based on provided parameters.
 
-        folder_name -- folder name in DATA_PATH directory that contains files for slices,
+        Args:
+            folder_name: folder name present in DATA_PATH directory that contains files for slices,
         the same name will be used as table name
-
-        src_enclosure -- enclosure of the source file ["]
-        src_delimiter -- delimiter of the source file [,]
-        dest_bucket -- name of the destination bucket (optional)
+            pkey: array of pkeys
+            incremental: boolean
+            src_delimiter: delimiter of the source file [,]
+            src_enclosure: enclosure of the source file ["]
+            dest_bucket: name of the destination bucket, eg. in.c-input (optional)
 
 
         """
@@ -237,11 +307,11 @@ class KBCEnvHandler:
         for folder in res_sliced_folders:
             self.create_sliced_tables(folder, res_sliced_folders[folder], True)
 
-# ==============================================================================
-# == UTIL functions
+    # ==============================================================================
+    # == UTIL functions
 
     def get_past_date(self, str_days_ago, to_date=None, tz=pytz.utc):
-        '''
+        """
         Returns date in specified timezone relative to today.
 
         e.g.
@@ -251,7 +321,7 @@ class KBCEnvHandler:
         '4 months ago',
         '2 years ago',
         'today'
-        '''
+        """
         if to_date:
             TODAY = to_date
         else:
@@ -264,7 +334,7 @@ class KBCEnvHandler:
             return date
         elif splitted[1].lower() in ['hour', 'hours', 'hr', 'hrs', 'h']:
             date = datetime.datetime.now() - \
-                relativedelta(hours=int(splitted[0]))
+                   relativedelta(hours=int(splitted[0]))
             return date.date()
         elif splitted[1].lower() in ['day', 'days', 'd']:
             date = TODAY - relativedelta(days=int(splitted[0]))
@@ -282,7 +352,7 @@ class KBCEnvHandler:
             raise ValueError('Invalid relative period!')
 
     def split_dates_to_chunks(self, start_date, end_date, intv, strformat="%m%d%Y"):
-        '''
+        """
         Splits dates in given period into chunks of specified max size.
 
         Params:
@@ -296,11 +366,11 @@ class KBCEnvHandler:
 
             returns [{start_date: "2018-01-01", "end_date":"2018-01-02"}
                      {start_date: "2018-01-02", "end_date":"2018-01-04"}]
-        '''
+        """
         return list(self._split_dates_to_chunks_gen(start_date, end_date, intv, strformat))
 
     def _split_dates_to_chunks_gen(self, start_date, end_date, intv, strformat="%m%d%Y"):
-        '''
+        """
         Splits dates in given period into chunks of specified max size.
 
         Params:
@@ -314,7 +384,7 @@ class KBCEnvHandler:
 
             returns [{start_date: "2018-01-01", "end_date":"2018-01-02"}
                      {start_date: "2018-01-02", "end_date":"2018-01-04"}]
-        '''
+        """
 
         nr_days = (end_date - start_date).days
 
