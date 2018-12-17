@@ -18,6 +18,7 @@ KEY_MAND_PERIOD_GROUP = [KEY_PERIOD_FROM, KEY_PERIOD_TO]
 KEY_MAND_DATE_GROUP = [KEY_RELATIVE_PERIOD, KEY_MAND_PERIOD_GROUP]
 
 MANDATORY_PARS = [KEY_PROJECT_ID, KEY_API_TOKEN, KEY_MAND_DATE_GROUP]
+MANDATORY_IMAGE_PARS = []
 
 APP_VERSION = '0.0.1'
 
@@ -26,8 +27,9 @@ class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
         KBCEnvHandler.__init__(self, MANDATORY_PARS)
+        s = KBCEnvHandler()
         # override debug from config
-        if(self.cfg_params.get('debug')):
+        if self.cfg_params.get('debug'):
             debug = True
 
         self.set_default_logger('DEBUG' if debug else 'INFO')
@@ -35,7 +37,8 @@ class Component(KBCEnvHandler):
         logging.info('Loading configuration...')
 
         try:
-            self.validateConfig()
+            self.validate_config()
+            self.validate_image_parameters(MANDATORY_IMAGE_PARS)
         except ValueError as e:
             logging.error(e)
             exit(1)
