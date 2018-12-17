@@ -27,7 +27,6 @@ class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
         KBCEnvHandler.__init__(self, MANDATORY_PARS)
-        s = KBCEnvHandler()
         # override debug from config
         if self.cfg_params.get('debug'):
             debug = True
