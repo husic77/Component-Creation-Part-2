@@ -29,7 +29,7 @@ pipelines:
           - docker images
           - docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
           - echo "Running unit-tests..."
-          - docker run $APP_IMAGE python -m unittest discover          
+          - docker run $APP_IMAGE python -m unittest discover
           - echo "Preparing KBC test image"
           - docker pull quay.io/keboola/developer-portal-cli-v2:latest
           # push test image to ECR - uncomment when initialised
@@ -39,4 +39,4 @@ pipelines:
           # - docker push $REPOSITORY:test
           # - docker run --rm -e KBC_STORAGE_TOKEN quay.io/keboola/syrup-cli:latest run-job $KBC_DEVELOPERPORTAL_APP $BASE_KBC_CONFIG test
           # - docker run --rm -e KBC_STORAGE_TOKEN quay.io/keboola/syrup-cli:latest run-job $KBC_DEVELOPERPORTAL_APP $KBC_CONFIG_1 test
-          - .deploy.sh
+          - ./deploy.sh
