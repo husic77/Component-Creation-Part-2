@@ -3,9 +3,12 @@ ENV PYTHONIOENCODING utf-8
 
 COPY . /code/
 
-RUN pip install flake8
+# install gcc to be able to build packages - e.g. required by regex, dateparser, also required for pandas
+RUN apt-get update && apt-get install -y build-essential
 
-RUN pip install -r /code/requirements.txt
+RUN pip install flake8
+# process dependency links to install kds-team.keboola-util library
+RUN pip install --process-dependency-links -r /code/requirements.txt
 
 WORKDIR /code/
 
