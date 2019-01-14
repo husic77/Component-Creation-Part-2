@@ -17,7 +17,7 @@ cd my-new-component
 rm -rf .git
 git init
 git remote add origin PATH_TO_YOUR_BB_REPO
-git update-index --chmod=+x deployment/deploy.sh
+git update-index --chmod=+x deploy.sh
 git update-index --chmod=+x scripts/update_dev_portal_properties.sh
 git add .
 git commit -m 'initial'
@@ -28,6 +28,7 @@ git push -u origin master
 ##Setting up CI
  - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
  - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
+ 
  ![picture](docs/imgs/ci_variable.png)
  
  
