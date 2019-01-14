@@ -18,7 +18,8 @@ rm -rf .git
 git init
 git remote add origin PATH_TO_YOUR_BB_REPO
 git update-index --chmod=+x deployment/deploy.sh
-git add . 
+git update-index --chmod=+x scripts/update_dev_portal_properties.sh
+git add .
 git commit -m 'initial'
 git push -u origin master
 ```
