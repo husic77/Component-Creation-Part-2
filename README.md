@@ -14,17 +14,20 @@ and not on boilerplate tasks. If anything is missing in the library, please fork
 so we can all benefit from it
 
 **Base components on [KBCEnvHandler](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/env_handler.md?at=master)**
+
 - No need to write configuration processing and validation code each time
 - No need to setup logging environment manually
 - No need to write code to store manifests, write statefile, retrieve dates based on relative period, and meny more.
 - The main focus can be the core component logic, which increases the code readability for new comers.
 
 **Base Client on [HtttpClientBase](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/client_base.md?at=master)**
+
 - No need to write HTTP request handling over and over again
 - Covers basic authentication, retry strategy, headers, default parameters
 
 **Process results using [result.py](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/result.md?at=master) 
 package**
+
 - No need to use pandas
 - Enables basic json response flattening
 - Fixed headers, user values and more useful functionality
