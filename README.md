@@ -7,6 +7,35 @@ Use as a starting point when creating a new component.
 Example uses [keboola-python-util-lib](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/) library providing useful methods for KBC related tasks and boilerplate methods often needed by components, for more details see [documentation](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/README.md)
 
 
+## Recommended component architecture
+It is recommended to use the [keboola-python-util-lib library](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/), 
+for each component. Major advantage is that it reduces the boilerplate code replication, the developer can focus on core component logic 
+and not on boilerplate tasks. If anything is missing in the library, please fork and create a pull request with additional changes, 
+so we can all benefit from it
+
+**Base components on [KBCEnvHandler](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/env_handler.md?at=master)**
+- No need to write configuration processing and validation code each time
+- No need to setup logging environment manually
+- No need to write code to store manifests, write statefile, retrieve dates based on relative period, and meny more.
+- The main focus can be the core component logic, which increases the code readability for new comers.
+
+**Base Client on [HtttpClientBase](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/client_base.md?at=master)**
+- No need to write HTTP request handling over and over again
+- Covers basic authentication, retry strategy, headers, default parameters
+
+**Process results using [result.py](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/result.md?at=master) 
+package**
+- No need to use pandas
+- Enables basic json response flattening
+- Fixed headers, user values and more useful functionality
+
+
+### Example component
+This template contains functional example of an [extractor component](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/src/component.py), 
+it can be run with [sample configuration](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/data/) and it produces valid results. 
+It is advisable to use this structure as a base for new components. Especially the `component.py` module, which should only 
+contain the base logic necessary for communication with KBC interface, processing parameters, collecting results
+ and calling targeted API service methods. 
 
 
 ##Creating a new component
