@@ -4,14 +4,16 @@ Template Component main class.
 '''
 
 import logging
+import sys
 from datetime import datetime
 
 from kbc.env_handler import KBCEnvHandler
-from kbc.result import *
+from kbc.result import KBCTableDef
+from kbc.result import ResultWriter
 
 from hs import hs_client, hs_result
-from hs.hs_result import DealsWriter
 from hs.hs_client import HubspotClient
+from hs.hs_result import DealsWriter
 
 # global constants
 SUPPORTED_ENDPOINTS = ['companies', 'deals']
@@ -53,7 +55,7 @@ class Component(KBCEnvHandler):
         token = self.cfg_params[KEY_API_TOKEN]
         self.hs_client = HubspotClient(token)
 
-    def run(self, debug=False):
+    def run(self):
         '''
         Main execution code
         '''
@@ -121,8 +123,9 @@ class Component(KBCEnvHandler):
     def _get_n_process_results(self, ds_getter, writer, *fpars):
         """
                Generic method to get simple objects
-               :param res_file_path:
-               :param fs_getter:
+               :param ds_getter: dataset method to call
+               :param writer: result writer instance
+               :param *fpars: positional arguments for the ds_getter function.
                :return:
                """
         with writer:
@@ -152,5 +155,9 @@ class Component(KBCEnvHandler):
         Main entrypoint
 """
 if __name__ == "__main__":
-    comp = Component()
+    if len(sys.argv) > 1:
+        debug = sys.argv[1]
+    else:
+        debug = True
+    comp = Component(debug)
     comp.run()

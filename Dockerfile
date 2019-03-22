@@ -1,4 +1,4 @@
-FROM python:3.7.1-slim
+FROM python:3.7.2-slim
 ENV PYTHONIOENCODING utf-8
 
 COPY . /code/
@@ -7,8 +7,8 @@ COPY . /code/
 RUN apt-get update && apt-get install -y build-essential
 
 RUN pip install flake8
-# process dependency links to install kds-team.keboola-util library
-RUN pip install --process-dependency-links -r /code/requirements.txt
+
+RUN pip install -r /code/requirements.txt
 
 WORKDIR /code/
 
