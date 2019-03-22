@@ -60,6 +60,14 @@ git push -u origin master
  - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
  - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
  
+ In case it is not set on the account level, set also other required dev portal env variables:
+ - `KBC_DEVELOPERPORTAL_PASSWORD` - service account password
+ - `KBC_DEVELOPERPORTAL_USERNAME` - service account username
+ - `KBC_DEVELOPERPORTAL_VENDOR` - dev portal vendor
+ - `APP_IMAGE` - arbitrary tag name of the docker image e.g. “keboola-component”
+ - `KBC_STORAGE_TOKEN` - in case you wish to run KBC automated tests
+  
+ 
  ![picture](docs/imgs/ci_variable.png)
  
  
@@ -68,14 +76,14 @@ git push -u origin master
 This example contains runnable container with simple unittest. For local testing it is useful to include `data` folder in the root
 and use docker-compose commands to run the container or execute tests. 
 
-If required, change local data folder path to your custom:
+If required, change local data folder (the `CUSTOM_FOLDER` placeholder) path to your custom path:
 ```yaml
     volumes:
       - ./:/code
       - ./CUSTOM_FOLDER:/data
 ```
 
-Clone this repository and init the workspace with following command:
+Clone this repository, init the workspace and run the component with following command:
 
 ```
 git clone https://bitbucket.org:kds_consulting_team/kbc-python-template.git my-new-component
@@ -89,7 +97,49 @@ Run the test suite and lint check using this command:
 ```
 docker-compose run --rm test
 ```
+
+## Testing
+
+The preset pipeline scripts contain sections allowing pushing testing image into the ECR repository and automatic 
+testing in a dedicated project. These sections are by default commented out. 
+
+**Running KBC tests on deploy step, before deployment**
+
+Uncomment following section in the deployment step in `bitbucket-pipelines.yml` file:
+
+```yaml
+            # push test image to ECR - uncomment when initialised
+            # - export REPOSITORY=`docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-repository $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP`
+            # - docker tag $APP_IMAGE:latest $REPOSITORY:test
+            # - eval $(docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-login $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP)
+            # - docker push $REPOSITORY:test
+            # - docker run --rm -e KBC_STORAGE_TOKEN quay.io/keboola/syrup-cli:latest run-job $KBC_DEVELOPERPORTAL_APP BASE_KBC_CONFIG test
+            # - docker run --rm -e KBC_STORAGE_TOKEN quay.io/keboola/syrup-cli:latest run-job $KBC_DEVELOPERPORTAL_APP KBC_CONFIG_1 test
+            - ./scripts/update_dev_portal_properties.sh
+            - ./deploy.sh
+```
+
+Make sure that you have `KBC_STORAGE_TOKEN` env. variable set, containing appropriate storage token with access 
+to your KBC project. Also make sure to create a functional testing configuration and replace the `BASE_KBC_CONFIG` placeholder with its id.
+
+**Pushing testing image for manual KBC tests**
+
+In some cases you may wish to execute a testing version of your component manually prior to publishing. For instance to test various
+configurations on it. For that it may be convenient to push the `test` image on every push either to master, or any branch.
+
+To achieve that simply uncomment appropriate sections in `bitbucket-pipelines.yml` file, either in master branch step or in `default` step.
+
+```yaml
+            # push test image to ecr - uncomment for testing before deployment
+#            - echo 'Pushing test image to repo. [tag=test]'
+#            - export REPOSITORY=`docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-repository $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP`
+#            - docker tag $APP_IMAGE:latest $REPOSITORY:test
+#            - eval $(docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-login $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP)
+#            - docker push $REPOSITORY:test
+```
  
+ Once the build is finished, you may run such configuration in any KBC project as many times as you want by using [run-job](https://kebooladocker.docs.apiary.io/#reference/run/create-a-job-with-image/run-job) API call, using the `test` image tag.
+
 # Integration
 
 For information about deployment and integration with KBC, please refer to the [deployment section of developers documentation](https://developers.keboola.com/extend/component/deployment/) 
