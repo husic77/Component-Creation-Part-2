@@ -93,8 +93,10 @@ The choice to include this script directly in the master branch was made to simp
 
 ### Tagged commit stage
 Whenever a tagged commit is added, or tag created this script gets executed. This is a deployment phase, so a successful build results in new code being deployed in KBC production.
-At this stage all steps present in the default and master stage are executed. Additionally, deploy.sh script that pushes the newly built image / tag into the ECR repository and KBC production is executed.
-The deploy script is executed only after all tests and proper build steps passed. Moreover, the deploy.sh script will be executed only in the master branch. In other words if you create a tagged commit in another branch, the pipeline gets triggered but deployment script will fail, because it is not triggered within a master branch. This is to prevent accidental deployment from a feature branch.
+At this stage all steps present in the default and master stage are executed. Additionally, 
+`deploy.sh` script that pushes the newly built image / tag into the ECR repository and KBC production is executed.
+The deploy script is executed only after all tests and proper build steps passed. 
+Moreover, the `deploy.sh` script will be executed **only in the master branch**. In other words if you create a tagged commit in another branch, the pipeline gets triggered but deployment script will fail, because it is not triggered within a master branch. This is to prevent accidental deployment from a feature branch.
 
  
  
