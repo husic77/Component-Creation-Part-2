@@ -37,7 +37,6 @@ DEAL_DEFAULT_PROPERTIES = ['authority', 'budget', 'campaign_source', 'hs_analyti
                            'hubspot_owner_id',
                            'partner_name', 'notes_last_updated']
 
-
 # endpoints
 
 DEALS_ALL = 'deals/v1/deal/paged'
@@ -53,6 +52,13 @@ COMPANY_PROPERTIES = 'properties/v1/companies/properties/'
 
 
 class HubspotClient(HttpClientBase):
+    """
+    Basic HTTP client taking care of core HTTP communication with the API service.
+
+    It exttends the kbc.client_base.HttpClientBase class, setting up the specifics for Hubspot service and adding
+    methods for handling pagination.
+
+    """
 
     def __init__(self, token):
         HttpClientBase.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
@@ -60,7 +66,20 @@ class HubspotClient(HttpClientBase):
 
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr, offset_resp_attr,
                                 has_more_attr, offset, limit):
+        """
+        Generic pagination getter method returning Iterable instance that can be used in for loops.
 
+        :param endpoint:
+        :param parameters:
+        :param res_obj_name:
+        :param limit_attr:
+        :param offset_req_attr:
+        :param offset_resp_attr:
+        :param has_more_attr:
+        :param offset:
+        :param limit:
+        :return:
+        """
         has_more = True
         while has_more:
 
