@@ -1,4 +1,5 @@
-from kbc.result import *
+from kbc.result import KBCTableDef
+from kbc.result import ResultWriter
 
 # Pkeys
 COMPANY_PK = ['companyId']
