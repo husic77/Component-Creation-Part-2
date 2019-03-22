@@ -56,7 +56,7 @@ git push -u origin master
 ```
 
 
-##Setting up CI
+##Setting up the CI
  - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
  - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
  
@@ -69,6 +69,33 @@ git push -u origin master
   
  
  ![picture](docs/imgs/ci_variable.png)
+ 
+The script execution is defined in three stages:
+
+### Default stage
+This script is executed on push to any branch except the master branch. It executes basic build and code quality steps. Following steps are performed:
+Build docker image
+Execute flake8 lint tests
+Execute python unittest
+(Optional) Push image with tag :test into the AWS repository for manual testing in KBC
+If any of the above steps results in non 0 status, the build will fail. It is impossible to merge branches that fail to build into the master branch.
+
+### Master stage
+This script is executed on any push or change in the master branch. It performs every step as the default stage. Additionally, 
+the `./scripts/update_dev_portal_properties.sh` script is executed. 
+This script propagates all changes in the Component configuration files (component_config folder) to the Developer portal.
+Currently these Dev Portal configuration parameters are supported:
+ - `configuration_schema.json`
+ - `short_description.md`
+ - `long_description.md`    
+
+The choice to include this script directly in the master branch was made to simplify ad-hoc changes of the component configuration parameters. For instance if you wish to slightly modify the configuration schema without affecting the code itself, it is possible to simply push the changes directly into the master and these will be automatically propagated to the production without rebuilding the image itself. Solely Developer Portal configuration metadata is deployed at this stage.
+
+### Tagged commit stage
+Whenever a tagged commit is added, or tag created this script gets executed. This is a deployment phase, so a successful build results in new code being deployed in KBC production.
+At this stage all steps present in the default and master stage are executed. Additionally, deploy.sh script that pushes the newly built image / tag into the ECR repository and KBC production is executed.
+The deploy script is executed only after all tests and proper build steps passed. Moreover, the deploy.sh script will be executed only in the master branch. In other words if you create a tagged commit in another branch, the pipeline gets triggered but deployment script will fail, because it is not triggered within a master branch. This is to prevent accidental deployment from a feature branch.
+
  
  
 ## Development
