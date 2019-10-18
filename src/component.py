@@ -15,7 +15,7 @@ from hs import hs_client, hs_result
 from hs.hs_client import HubspotClient
 from hs.hs_result import DealsWriter
 
-# global constants
+# global constants'
 SUPPORTED_ENDPOINTS = ['companies', 'deals']
 
 # configuration variables
@@ -26,6 +26,9 @@ KEY_ENDPOINTS = 'endpoints'
 KEY_COMPANY_PROPERTIES = 'company_properties'
 KEY_DEAL_PROPERTIES = 'deal_properties'
 
+# #### Keep for debug
+KEY_STDLOG = 'stdlogging'
+KEY_DEBUG = 'debug'
 MANDATORY_PARS = [KEY_ENDPOINTS, KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
 
@@ -35,12 +38,17 @@ APP_VERSION = '0.0.1'
 class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
-        KBCEnvHandler.__init__(self, MANDATORY_PARS)
+        KBCEnvHandler.__init__(self, MANDATORY_PARS, )
         # override debug from config
-        if self.cfg_params.get('debug'):
+        if self.cfg_params.get(KEY_DEBUG):
             debug = True
 
-        self.set_default_logger('DEBUG' if debug else 'INFO')
+        log_level = logging.DEBUG if debug else logging.INFO
+        if self.cfg_params.get(KEY_STDLOG):
+            # for debug purposes
+            self.set_default_logger(log_level)
+        else:
+            self.set_gelf_logger(log_level)
         logging.info('Running version %s', APP_VERSION)
         logging.info('Loading configuration...')
 
@@ -48,7 +56,7 @@ class Component(KBCEnvHandler):
             self.validate_config()
             self.validate_image_parameters(MANDATORY_IMAGE_PARS)
         except ValueError as e:
-            logging.error(e)
+            logging.exception(e)
             exit(1)
 
         # intialize instance parameteres
@@ -158,6 +166,10 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         debug = sys.argv[1]
     else:
-        debug = True
-    comp = Component(debug)
-    comp.run()
+        debug = False
+    try:
+        comp = Component(debug)
+        comp.run()
+    except Exception as e:
+        logging.exception(e)
+        exit(1)
