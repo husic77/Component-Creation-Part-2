@@ -4,16 +4,20 @@ Template Component main class.
 '''
 
 import logging
+import os
 import sys
-from datetime import datetime
 
+from datetime import datetime
 from kbc.env_handler import KBCEnvHandler
 from kbc.result import KBCTableDef
 from kbc.result import ResultWriter
 
+# ####### EXAMPLE TO REMOVE
 from hs import hs_client, hs_result
 from hs.hs_client import HubspotClient
 from hs.hs_result import DealsWriter
+
+# ####### EXAMPLE TO REMOVE
 
 # global constants'
 SUPPORTED_ENDPOINTS = ['companies', 'deals']
@@ -44,11 +48,11 @@ class Component(KBCEnvHandler):
             debug = True
 
         log_level = logging.DEBUG if debug else logging.INFO
-        if self.cfg_params.get(KEY_STDLOG):
-            # for debug purposes
-            self.set_default_logger(log_level)
-        else:
+        # setup GELF if available
+        if os.getenv('KBC_LOGGER_ADDR', None):
             self.set_gelf_logger(log_level)
+        else:
+            self.set_default_logger(log_level)
         logging.info('Running version %s', APP_VERSION)
         logging.info('Loading configuration...')
 
@@ -58,10 +62,11 @@ class Component(KBCEnvHandler):
         except ValueError as e:
             logging.exception(e)
             exit(1)
-
+        # ####### EXAMPLE TO REMOVE
         # intialize instance parameteres
         token = self.cfg_params[KEY_API_TOKEN]
         self.hs_client = HubspotClient(token)
+        # ####### EXAMPLE TO REMOVE END
 
     def run(self):
         '''
@@ -69,6 +74,7 @@ class Component(KBCEnvHandler):
         '''
         params = self.cfg_params  # noqa
 
+        # ####### EXAMPLE TO REMOVE
         if params.get(KEY_PERIOD_FROM):
             start_date, end_date = self.get_date_period_converted(params.get(KEY_PERIOD_FROM),
                                                                   datetime.utcnow().strftime('%Y-%m-%d'))
@@ -88,7 +94,9 @@ class Component(KBCEnvHandler):
             self.extract_deals(start_date)
 
         logging.info("Extraction finished")
+        # ####### EXAMPLE TO REMOVE END
 
+    # ####### EXAMPLE TO REMOVE (ALL BELOW UNTIL END MARKER)
     def extract_deals(self, start_time):
         logging.info('Extracting Companies from HubSpot CRM')
         fields = self._parse_props(self.cfg_params.get(KEY_DEAL_PROPERTIES))
@@ -158,6 +166,8 @@ class Component(KBCEnvHandler):
             prop_cols.append('properties.' + p + '.versions')
         return prop_cols
 
+
+# ####### EXAMPLE TO REMOVE END
 
 """
         Main entrypoint
