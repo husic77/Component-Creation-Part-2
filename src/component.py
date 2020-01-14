@@ -4,7 +4,6 @@ Template Component main class.
 '''
 
 import logging
-import os
 import sys
 
 from datetime import datetime
@@ -42,17 +41,12 @@ APP_VERSION = '0.0.1'
 class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
-        KBCEnvHandler.__init__(self, MANDATORY_PARS, )
+        KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO)
         # override debug from config
         if self.cfg_params.get(KEY_DEBUG):
             debug = True
-
-        log_level = logging.DEBUG if debug else logging.INFO
-        # setup GELF if available
-        if os.getenv('KBC_LOGGER_ADDR', None):
-            self.set_gelf_logger(log_level)
-        else:
-            self.set_default_logger(log_level)
+        if debug:
+            logging.getLogger().setLevel(logging.DEBUG)
         logging.info('Running version %s', APP_VERSION)
         logging.info('Loading configuration...')
 
@@ -174,11 +168,11 @@ class Component(KBCEnvHandler):
 """
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        debug = sys.argv[1]
+        debug_arg = sys.argv[1]
     else:
-        debug = False
+        debug_arg = False
     try:
-        comp = Component(debug)
+        comp = Component(debug_arg)
         comp.run()
     except Exception as e:
         logging.exception(e)
