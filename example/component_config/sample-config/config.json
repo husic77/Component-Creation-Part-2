@@ -20,7 +20,13 @@
   },
   "parameters": {
     "#api_token": "demo",
-    "print_hello": true,
+    "period_from": "yesterday",
+    "endpoints": [
+      "deals",
+      "companies"
+    ],
+    "company_properties": "",
+    "deal_properties": "",
     "debug": true
   },
   "image_parameters": {
