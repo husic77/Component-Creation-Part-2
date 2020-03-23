@@ -8,13 +8,7 @@ jobs:
     - stage: deploy_dev_portal
       if: branch = master
       script: "./scripts/update_dev_portal_properties.sh"
-    - stage: deploy
-      provider: script
-      skip_cleanup: true
-      script: "./deploy.sh"
-      on:
-        tags: true
-        branch: master
+
 
 before_script:
   - export APP_IMAGE=keboola-component
@@ -32,3 +26,11 @@ before_script:
 
 after_success:
   - docker images
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: "./deploy.sh"
+  on:
+    tags: true
+    branch: master
