@@ -6,7 +6,7 @@ services:
 jobs:
   include:
     - stage: deploy_dev_portal
-      if: branch = master
+      if: branch = update/travis-script-example-separate
       script: "./scripts/update_dev_portal_properties.sh"
     - stage: deploy
       provider: script
