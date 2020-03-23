@@ -10,6 +10,7 @@ jobs:
       provider: script
       script: "./scripts/update_dev_portal_properties.sh"
     - stage: deploy
+      if: tag IS present AND  branch = master
       on:
         tags: true
         branch: master
