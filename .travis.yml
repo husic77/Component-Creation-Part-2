@@ -20,7 +20,7 @@ before_script:
   - export APP_IMAGE=keboola-component
   - docker -v
   - docker build -t $APP_IMAGE .
-  - docker run $APP_IMAGE flake8
+  - docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
   - docker run $APP_IMAGE python -m unittest discover
   # push test image to ECR - uncomment for testing before deployment
 #  - docker pull quay.io/keboola/developer-portal-cli-v2:latest
