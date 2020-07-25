@@ -2,8 +2,10 @@
 __pycache__/
 *.py[cod]
 .idea
-.project
-.pydevproject
+.vscode
+.DS_Store
+/example/.project
+/example/.pydevproject
 
 # kbc datafolder
-data/
+/data

@@ -43,14 +43,14 @@ contain the base logic necessary for communication with KBC interface, processin
 ##Creating a new component
 Clone this repository into new folder and remove git history
 ```bash
-git clone https://bitbucket.org:kds_consulting_team/kbc-python-template.git my-new-component
+git clone https://bitbucket.org/kds_consulting_team/kbc-python-template.git my-new-component
 cd my-new-component
 rm -rf .git
 git init
 git remote add origin PATH_TO_YOUR_BB_REPO
+git add .
 git update-index --chmod=+x deploy.sh
 git update-index --chmod=+x scripts/update_dev_portal_properties.sh
-git add .
 git commit -m 'initial'
 git push -u origin master
 ```
