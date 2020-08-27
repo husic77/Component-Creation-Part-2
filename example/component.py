@@ -4,19 +4,14 @@ Template Component main class.
 '''
 
 import logging
+import os
 import sys
-
 from datetime import datetime
+from pathlib import Path
+
 from kbc.env_handler import KBCEnvHandler
 from kbc.result import KBCTableDef
 from kbc.result import ResultWriter
-
-# ####### EXAMPLE TO REMOVE
-from hs import hs_client, hs_result
-from hs.hs_client import HubspotClient
-from hs.hs_result import DealsWriter
-
-# ####### EXAMPLE TO REMOVE
 
 # global constants'
 SUPPORTED_ENDPOINTS = ['companies', 'deals']
@@ -35,13 +30,18 @@ KEY_DEBUG = 'debug'
 MANDATORY_PARS = [KEY_ENDPOINTS, KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
 
+# for easier local project setup
+DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent.joinpath('data') \
+    if not os.environ.get('KBC_DATADIR') else None
+
 APP_VERSION = '0.0.1'
 
 
 class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
-        KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO)
+        KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO,
+                               data_path=DEFAULT_DATA_DIR)
         # override debug from config
         if self.cfg_params.get(KEY_DEBUG):
             debug = True
