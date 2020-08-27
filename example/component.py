@@ -31,7 +31,7 @@ MANDATORY_PARS = [KEY_ENDPOINTS, KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
 
 # for easier local project setup
-DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent.joinpath('data') \
+DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent.joinpath('data').as_posix() \
     if not os.environ.get('KBC_DATADIR') else None
 
 APP_VERSION = '0.0.1'

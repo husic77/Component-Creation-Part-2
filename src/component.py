@@ -4,7 +4,9 @@ Template Component main class.
 '''
 
 import logging
+import os
 import sys
+from pathlib import Path
 
 from kbc.env_handler import KBCEnvHandler
 
@@ -18,13 +20,18 @@ KEY_DEBUG = 'debug'
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
 
+# for easier local project setup
+DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent.joinpath('data').as_posix() \
+    if not os.environ.get('KBC_DATADIR') else None
+
 APP_VERSION = '0.0.1'
 
 
 class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
-        KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO)
+        KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO,
+                               data_path=DEFAULT_DATA_DIR)
         # override debug from config
         if self.cfg_params.get(KEY_DEBUG):
             debug = True
