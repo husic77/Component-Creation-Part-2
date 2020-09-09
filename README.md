@@ -6,8 +6,11 @@ Use as a starting point when creating a new component.
 
 Example uses [keboola-python-util-lib](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/) library providing useful methods for KBC related tasks and boilerplate methods often needed by components, for more details see [documentation](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/README.md)
 
+**Table of contents:**  
+  
+[TOC]
 
-## Recommended component architecture
+# Recommended component architecture
 It is recommended to use the [keboola-python-util-lib library](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/), 
 for each component. Major advantage is that it reduces the boilerplate code replication, the developer can focus on core component logic 
 and not on boilerplate tasks. If anything is missing in the library, please fork and create a pull request with additional changes, 
@@ -32,7 +35,7 @@ so we can all benefit from it
 - Fixed headers, user values and more useful functionality
 
 
-### Example component
+## Example component
 This template contains functional example of an [extractor component](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/src/component.py), 
 it can be run with [sample configuration](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/data/) and it produces valid results. 
 It is advisable to use this structure as a base for new components. Especially the `component.py` module, which should only 
@@ -40,7 +43,7 @@ contain the base logic necessary for communication with KBC interface, processin
  and calling targeted API service methods. 
 
 
-##Creating a new component
+# Creating a new component
 Clone this repository into new folder and remove git history
 ```bash
 git clone https://bitbucket.org/kds_consulting_team/kbc-python-template.git my-new-component
@@ -56,7 +59,7 @@ git push -u origin master
 ```
 
 
-##Setting up the CI
+# Setting up the CI
  - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
  - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
  
@@ -72,7 +75,7 @@ git push -u origin master
  
 The script execution is defined in three stages:
 
-### Default stage
+## Default stage
 This script is executed on push to any branch except the master branch. It executes basic build and code quality steps. Following steps are performed:
 Build docker image
 Execute flake8 lint tests
@@ -80,7 +83,7 @@ Execute python unittest
 (Optional) Push image with tag :test into the AWS repository for manual testing in KBC
 If any of the above steps results in non 0 status, the build will fail. It is impossible to merge branches that fail to build into the master branch.
 
-### Master stage
+## Master stage
 This script is executed on any push or change in the master branch. It performs every step as the default stage. Additionally, 
 the `./scripts/update_dev_portal_properties.sh` script is executed. 
 This script propagates all changes in the Component configuration files (component_config folder) to the Developer portal.
@@ -91,7 +94,7 @@ Currently these Dev Portal configuration parameters are supported:
 
 The choice to include this script directly in the master branch was made to simplify ad-hoc changes of the component configuration parameters. For instance if you wish to slightly modify the configuration schema without affecting the code itself, it is possible to simply push the changes directly into the master and these will be automatically propagated to the production without rebuilding the image itself. Solely Developer Portal configuration metadata is deployed at this stage.
 
-### Tagged commit stage
+## Tagged commit stage
 Whenever a tagged commit is added, or tag created this script gets executed. This is a deployment phase, so a successful build results in new code being deployed in KBC production.
 At this stage all steps present in the default and master stage are executed. Additionally, 
 `deploy.sh` script that pushes the newly built image / tag into the ECR repository and KBC production is executed.
@@ -99,8 +102,32 @@ The deploy script is executed only after all tests and proper build steps passed
 Moreover, the `deploy.sh` script will be executed **only in the master branch**. In other words if you create a tagged commit in another branch, the pipeline gets triggered but deployment script will fail, because it is not triggered within a master branch. This is to prevent accidental deployment from a feature branch.
 
  
+# GELF logging
+
+The template automatically chooses between STDOUT and GELF logger based on the Developer Portal configuration.
+
+To fully leverage the benefits such as outputting the `Stack Trace` into the log event detail (available by clicking on the log event) 
+log exceptions using `logger.exception(ex)`.
+
+Recommended [GELF logger setup](https://developers.keboola.com/extend/common-interface/logging/#setting-up) (Developer Portal) to allow debug mode logging:
+
+```json
+{
+  "verbosity": {
+    "100": "normal",
+    "200": "normal",
+    "250": "normal",
+    "300": "normal",
+    "400": "verbose",
+    "500": "camouflage",
+    "550": "camouflage",
+    "600": "camouflage"
+  },
+  "gelf_server_type": "tcp"
+}
+``` 
  
-## Development
+# Development
  
 This example contains runnable container with simple unittest. For local testing it is useful to include `data` folder in the root
 and use docker-compose commands to run the container or execute tests. 
