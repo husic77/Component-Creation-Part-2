@@ -34,6 +34,9 @@ so we can all benefit from it
 - Enables basic json response flattening
 - Fixed headers, user values and more useful functionality
 
+## Architecture using the template
+
+![picture](docs/imgs/architecture.png)
 
 ## Example component
 This template contains functional example of an [extractor component](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/src/component.py), 
