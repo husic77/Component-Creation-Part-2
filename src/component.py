@@ -20,18 +20,18 @@ KEY_DEBUG = 'debug'
 MANDATORY_PARS = [KEY_API_TOKEN, KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
 
-# for easier local project setup
-DEFAULT_DATA_DIR = Path(__file__).resolve().parent.parent.joinpath('data').as_posix() \
-    if not os.environ.get('KBC_DATADIR') else None
-
 APP_VERSION = '0.0.1'
 
 
 class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
+        # for easier local project setup
+        default_data_dir = Path(__file__).resolve().parent.parent.joinpath('data').as_posix() \
+            if not os.environ.get('KBC_DATADIR') else None
+
         KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO,
-                               data_path=DEFAULT_DATA_DIR)
+                               data_path=default_data_dir)
         # override debug from config
         if self.cfg_params.get(KEY_DEBUG):
             debug = True
