@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
 
+# compatibility with travis and bitbucket
+if [[ $BITBUCKET_TAG ]]; then
+    export TAG=$BITBUCKET_TAG
+elif [[ $TRAVIS_TAG ]]; then
+    export TAG=$TRAVIS_TAG
+fi
+
 #check if deployment is triggered only in master
 if [ $BITBUCKET_BRANCH != "master" ]; then
                echo Deploy on tagged commit can be only executed in master!
@@ -22,19 +29,19 @@ eval $(docker run --rm \
     ecr:get-login ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP})
 
 # Push to the repository
-docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${BITBUCKET_TAG}
+docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TAG}
 docker tag ${APP_IMAGE}:latest ${REPOSITORY}:latest
-docker push ${REPOSITORY}:${BITBUCKET_TAG}
+docker push ${REPOSITORY}:${TAG}
 docker push ${REPOSITORY}:latest
 
 # Update the tag in Keboola Developer Portal -> Deploy to KBC
-if echo ${BITBUCKET_TAG} | grep -c '^v\?[0-9]\+\.[0-9]\+\.[0-9]\+$'
+if echo ${TAG} | grep -c '^v\?[0-9]\+\.[0-9]\+\.[0-9]\+$'
 then
     docker run --rm \
         -e KBC_DEVELOPERPORTAL_USERNAME \
         -e KBC_DEVELOPERPORTAL_PASSWORD \
         quay.io/keboola/developer-portal-cli-v2:latest \
-        update-app-repository ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} ${BITBUCKET_TAG} ecr ${REPOSITORY}
+        update-app-repository ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} ${TAG} ecr ${REPOSITORY}
 else
-    echo "Skipping deployment to KBC, tag ${BITBUCKET_TAG} is not allowed."
+    echo "Skipping deployment to KBC, tag ${TAG} is not allowed."
 fi
