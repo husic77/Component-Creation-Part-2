@@ -17,7 +17,8 @@ KEY_PRINT_HELLO = 'print_hello'
 # #### Keep for debug
 KEY_DEBUG = 'debug'
 
-MANDATORY_PARS = [KEY_API_TOKEN, KEY_API_TOKEN]
+# list of mandatory parameters => if some is missing, component will fail with readable message on initialization.
+MANDATORY_PARS = [KEY_DEBUG]
 MANDATORY_IMAGE_PARS = []
 
 APP_VERSION = '0.0.1'
@@ -41,6 +42,7 @@ class Component(KBCEnvHandler):
         logging.info('Loading configuration...')
 
         try:
+            # validation of mandatory parameters. Produces ValueError
             self.validate_config(MANDATORY_PARS)
             self.validate_image_parameters(MANDATORY_IMAGE_PARS)
         except ValueError as e:
