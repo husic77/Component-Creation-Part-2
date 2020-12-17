@@ -24,6 +24,8 @@ before_script:
   - export APP_IMAGE=keboola-component
   - docker -v
   - docker build -t $APP_IMAGE .
+  - chmod +x ./scripts/update_dev_portal_properties.sh
+  - chmod +x ./deploy.sh
 
 after_success:
   - docker images
