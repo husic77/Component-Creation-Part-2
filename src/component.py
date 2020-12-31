@@ -49,9 +49,9 @@ class Component(KBCEnvHandler):
             logging.exception(e)
             exit(1)
         # ####### EXAMPLE TO REMOVE
-        # intialize instance parameteres
-
-        # ####### EXAMPLE TO REMOVE END
+        #         # intialize instance parameteres
+        #
+        #         # ####### EXAMPLE TO REMOVE END
 
     def run(self):
         '''

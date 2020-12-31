@@ -55,18 +55,29 @@ rm -rf .git
 git init
 git remote add origin PATH_TO_YOUR_BB_REPO
 git add .
-git update-index --chmod=+x deploy.sh
-git update-index --chmod=+x scripts/update_dev_portal_properties.sh
 git commit -m 'initial'
 git push -u origin master
 ```
 
+**Method #2:**
+
+Copy the contents of the template folder into your clone empty repository
+
+```bash
+git clone PATH_TO_YOUR_BB_REPO my-new-component
+# now copy the contents of the template into the my-new-component dir
+cd my-new-component
+git add .
+git commit -m 'initial'
+git push -u origin master
+```
 
 # Setting up the CI
  - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
  - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
  
  In case it is not set on the account level, set also other required dev portal env variables:
+ 
  - `KBC_DEVELOPERPORTAL_PASSWORD` - service account password
  - `KBC_DEVELOPERPORTAL_USERNAME` - service account username
  - `KBC_DEVELOPERPORTAL_VENDOR` - dev portal vendor
@@ -91,9 +102,11 @@ This script is executed on any push or change in the master branch. It performs 
 the `./scripts/update_dev_portal_properties.sh` script is executed. 
 This script propagates all changes in the Component configuration files (component_config folder) to the Developer portal.
 Currently these Dev Portal configuration parameters are supported:
- - `configuration_schema.json`
- - `short_description.md`
- - `long_description.md`    
+
+ - `configSchema.json`
+ - `configRowSchema.json`
+ - `component_short_description.md`
+ - `component_long_description.md`    
 
 The choice to include this script directly in the master branch was made to simplify ad-hoc changes of the component configuration parameters. For instance if you wish to slightly modify the configuration schema without affecting the code itself, it is possible to simply push the changes directly into the master and these will be automatically propagated to the production without rebuilding the image itself. Solely Developer Portal configuration metadata is deployed at this stage.
 
