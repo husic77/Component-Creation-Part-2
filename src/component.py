@@ -22,7 +22,7 @@ KEY_DEBUG = 'debug'
 REQUIRED_PARAMETERS = [KEY_DEBUG]
 REQUIRED_IMAGE_PARS = []
 
-APP_VERSION = '0.0.1'
+APP_VERSION = '0.0.1 BAKO'
 
 
 # class Component(KBCEnvHandler):
