@@ -4,9 +4,9 @@ Template Component main class.
 '''
 
 import logging
-import os
+# import os
 import sys
-from pathlib import Path
+# from pathlib import Path
 
 from keboola.component import CommonInterface
 
@@ -17,7 +17,8 @@ KEY_PRINT_HELLO = 'print_hello'
 # #### Keep for debug
 KEY_DEBUG = 'debug'
 
-# list of mandatory parameters => if some is missing, component will fail with readable message on initialization.
+# list of mandatory parameters => if some is missing,
+# component will fail with readable message on initialization.
 REQUIRED_PARAMETERS = [KEY_DEBUG]
 REQUIRED_IMAGE_PARS = []
 
@@ -28,10 +29,12 @@ APP_VERSION = '0.0.1'
 #
 #     def __init__(self, debug=False):
 #         # for easier local project setup
-#         default_data_dir = Path(__file__).resolve().parent.parent.joinpath('data').as_posix() \
+#         default_data_dir = Path(__file__).resolve()
+#         .parent.parent.joinpath('data').as_posix() \
 #             if not os.environ.get('KBC_DATADIR') else None
 #
-#         KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO,
+#         KBCEnvHandler.__init__(self, MANDATORY_PARS,
+#         log_level=logging.DEBUG if debug else logging.INFO,
 #                                data_path=default_data_dir)
 #         # override debug from config
 #         if self.cfg_params.get(KEY_DEBUG):
@@ -76,11 +79,12 @@ if __name__ == "__main__":
         debug_arg = False
     try:
         # initialize the library
-        # ci = CommonInterface()
+        ci = CommonInterface()
 
-        ci = CommonInterface(data_folder_path='../data')
+        # ci = CommonInterface(data_folder_path='../data')
 
-        # Checks for required parameters and throws ValueError if any is missing.
+        # Checks for required parameters and
+        # throws ValueError if any is missing.
         ci.validate_configuration(REQUIRED_PARAMETERS)
 
         # print KBC Project ID from the environment variable if present:
