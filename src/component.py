@@ -19,7 +19,7 @@ KEY_DEBUG = 'debug'
 
 # list of mandatory parameters => if some is missing,
 # component will fail with readable message on initialization.
-REQUIRED_PARAMETERS = [KEY_DEBUG]
+REQUIRED_PARAMETERS = []
 REQUIRED_IMAGE_PARS = []
 
 APP_VERSION = '0.0.1 BAKO'
