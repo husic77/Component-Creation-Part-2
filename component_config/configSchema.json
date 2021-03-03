@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "title": "extractor configuration",
+  "required": [
+    "debug"
+  ],
+  "properties": {
+    "debug": {
+      "type": "string",
+      "title": "Debug"
+    }
+  }
+}
