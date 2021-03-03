@@ -39,7 +39,7 @@ class Component(CommonInterface):
         '''
         Main execution code
         '''
-        params = self.cfg_params  # noqa
+        params = self.parameters  # noqa
 
         # ####### EXAMPLE TO REMOVE
         if params.get(KEY_PRINT_HELLO):
