@@ -2,7 +2,6 @@
 Template Component main class.
 
 '''
-
 import logging
 # import os
 import sys
@@ -23,6 +22,30 @@ REQUIRED_PARAMETERS = []
 REQUIRED_IMAGE_PARS = []
 
 APP_VERSION = '0.0.1 BAKO'
+
+
+class Component(CommonInterface):
+    def __init__(self, debug=False):
+        # for easier local project setup
+        # default_data_dir = Path(__file__).resolve().
+        # parent.parent.joinpath('data').as_posix() \
+        #     if not os.environ.get('KBC_DATADIR') else None
+        super().__init__()
+        # super().__init__(data_folder_path='../data')
+        self.validate_configuration(REQUIRED_PARAMETERS)
+        logging.info(self.environment_variables.project_id)
+
+    def run(self):
+        '''
+        Main execution code
+        '''
+        params = self.cfg_params  # noqa
+
+        # ####### EXAMPLE TO REMOVE
+        if params.get(KEY_PRINT_HELLO):
+            logging.info("Hello World")
+
+        # ####### EXAMPLE TO REMOVE END
 
 
 # class Component(KBCEnvHandler):
@@ -78,21 +101,8 @@ if __name__ == "__main__":
     else:
         debug_arg = False
     try:
-        # initialize the library
-        ci = CommonInterface()
-
-        # ci = CommonInterface(data_folder_path='../data')
-
-        # Checks for required parameters and
-        # throws ValueError if any is missing.
-        ci.validate_configuration(REQUIRED_PARAMETERS)
-
-        # print KBC Project ID from the environment variable if present:
-        logging.info(ci.environment_variables.project_id)
-
-        # comp = Component(debug_arg)
-        # comp.run()
-        print("Running")
+        comp = Component(debug_arg)
+        comp.run()
     except Exception as exc:
         logging.exception(exc)
         exit(1)
