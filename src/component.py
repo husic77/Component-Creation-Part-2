@@ -21,7 +21,7 @@ KEY_DEBUG = 'debug'
 REQUIRED_PARAMETERS = []
 REQUIRED_IMAGE_PARS = []
 
-APP_VERSION = '0.0.1 BAKO'
+APP_VERSION = '0.0.1'
 
 
 class Component(CommonInterface):
