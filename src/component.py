@@ -4,7 +4,6 @@ Template Component main class.
 '''
 import logging
 import os
-import sys
 from pathlib import Path
 
 from keboola.component import CommonInterface
@@ -18,21 +17,28 @@ KEY_DEBUG = 'debug'
 
 # list of mandatory parameters => if some is missing,
 # component will fail with readable message on initialization.
-REQUIRED_PARAMETERS = []
+REQUIRED_PARAMETERS = [KEY_DEBUG]
 REQUIRED_IMAGE_PARS = []
 
 APP_VERSION = '0.0.1'
 
 
+def get_local_data_path():
+    return Path(__file__).resolve().parent.parent.joinpath('data').as_posix()
+
+
+def get_data_folder_path():
+    data_folder_path = None
+    if not os.environ.get('KBC_DATADIR'):
+        data_folder_path = get_local_data_path()
+    return data_folder_path
+
+
 class Component(CommonInterface):
     def __init__(self, debug=False):
         # for easier local project setup
-        if not os.environ.get('KBC_DATADIR'):
-            data_folder_path = Path(__file__).resolve()\
-                .parent.parent.joinpath('data').as_posix()
-            super().__init__(data_folder_path=data_folder_path)
-        else:
-            super().__init__()
+        data_folder_path = get_data_folder_path()
+        super().__init__(data_folder_path=data_folder_path)
 
         # override debug from config
         if self.configuration.parameters[KEY_DEBUG]:
@@ -67,12 +73,8 @@ class Component(CommonInterface):
         Main entrypoint
 """
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        debug_arg = sys.argv[1]
-    else:
-        debug_arg = False
     try:
-        comp = Component(debug_arg)
+        comp = Component()
         comp.run()
     except Exception as exc:
         logging.exception(exc)
