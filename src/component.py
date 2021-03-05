@@ -78,4 +78,4 @@ if __name__ == "__main__":
         comp.run()
     except Exception as exc:
         logging.exception(exc)
-        exit(1)
+        exit(2)
