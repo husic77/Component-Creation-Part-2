@@ -17,7 +17,7 @@ KEY_DEBUG = 'debug'
 
 # list of mandatory parameters => if some is missing,
 # component will fail with readable message on initialization.
-REQUIRED_PARAMETERS = [KEY_DEBUG]
+REQUIRED_PARAMETERS = [KEY_PRINT_HELLO]
 REQUIRED_IMAGE_PARS = []
 
 APP_VERSION = '0.0.1'
@@ -34,19 +34,17 @@ def get_data_folder_path():
     return data_folder_path
 
 
+def set_debug_mode():
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.info('Running version %s', APP_VERSION)
+    logging.info('Loading configuration...')
+
+
 class Component(CommonInterface):
-    def __init__(self, debug=False):
+    def __init__(self):
         # for easier local project setup
         data_folder_path = get_data_folder_path()
         super().__init__(data_folder_path=data_folder_path)
-
-        # override debug from config
-        if self.configuration.parameters[KEY_DEBUG]:
-            debug = True
-        if debug:
-            logging.getLogger().setLevel(logging.DEBUG)
-            logging.info('Running version %s', APP_VERSION)
-            logging.info('Loading configuration...')
 
         try:
             # validation of required parameters. Produces ValueError
@@ -55,6 +53,9 @@ class Component(CommonInterface):
         except ValueError as e:
             logging.exception(e)
             exit(1)
+
+        if self.configuration.parameters.get(KEY_DEBUG):
+            set_debug_mode()
 
     def run(self):
         '''
