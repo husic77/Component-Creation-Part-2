@@ -34,12 +34,6 @@ def get_data_folder_path():
     return data_folder_path
 
 
-def set_debug_mode():
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.info('Running version %s', APP_VERSION)
-    logging.info('Loading configuration...')
-
-
 class Component(CommonInterface):
     def __init__(self):
         # for easier local project setup
@@ -55,7 +49,13 @@ class Component(CommonInterface):
             exit(1)
 
         if self.configuration.parameters.get(KEY_DEBUG):
-            set_debug_mode()
+            self.set_debug_mode()
+
+    @staticmethod
+    def set_debug_mode():
+        logging.getLogger().setLevel(logging.DEBUG)
+        logging.info('Running version %s', APP_VERSION)
+        logging.info('Loading configuration...')
 
     def run(self):
         '''
