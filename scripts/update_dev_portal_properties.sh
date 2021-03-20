@@ -79,7 +79,6 @@ then
             update-app-property ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} shortDescription --value="$value"
 else
     echo "shortDescription is empty!"
-    exit 1
 fi
 
 echo "Updating logger settings"
