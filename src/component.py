@@ -41,7 +41,7 @@ class Component(CommonInterface):
         super().__init__(data_folder_path=data_folder_path)
 
         logging.error('Some error')
-        print("Some print")
+        # print("Some print")
         # sys.stderr.writelines(['ERR'])
         exit(1)
 
