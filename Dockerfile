@@ -1,7 +1,10 @@
 FROM python:3.7.2-slim
 ENV PYTHONIOENCODING utf-8
 
-COPY . /code/
+COPY /src /code/src/
+COPY /tests /code/tests/
+COPY /scripts /code/scripts/
+COPY requirements.txt /code/requirements.txt
 
 # install gcc to be able to build packages - e.g. required by regex, dateparser, also required for pandas
 RUN apt-get update && apt-get install -y build-essential
