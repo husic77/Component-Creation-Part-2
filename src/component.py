@@ -6,6 +6,7 @@ import logging
 import os
 from pathlib import Path
 
+import sys
 from keboola.component import CommonInterface
 
 # configuration variables
@@ -39,6 +40,10 @@ class Component(CommonInterface):
         # for easier local project setup
         data_folder_path = get_data_folder_path()
         super().__init__(data_folder_path=data_folder_path)
+
+        logging.error('Some error')
+        print("Some print")
+        sys.stderr.writelines(['ERR'])
 
         try:
             # validation of required parameters. Produces ValueError
