@@ -6,7 +6,6 @@ import logging
 import os
 from pathlib import Path
 
-import sys
 from keboola.component import CommonInterface
 
 # configuration variables
