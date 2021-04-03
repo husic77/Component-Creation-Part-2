@@ -43,7 +43,8 @@ class Component(CommonInterface):
 
         logging.error('Some error')
         print("Some print")
-        sys.stderr.writelines(['ERR'])
+        # sys.stderr.writelines(['ERR'])
+        exit(1)
 
         try:
             # validation of required parameters. Produces ValueError
