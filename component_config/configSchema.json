@@ -6,11 +6,11 @@
   ],
   "properties": {
     "print_hello": {
-      "type": "string",
-      "title": "Debug"
+      "type": "boolean",
+      "title": "Print Hello"
     },
     "debug": {
-      "type": "string",
+      "type": "boolean",
       "title": "Debug"
     }
   }
