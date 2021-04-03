@@ -45,7 +45,7 @@ class Component(CommonInterface):
             self.validate_configuration(REQUIRED_PARAMETERS)
             self.validate_image_parameters(REQUIRED_IMAGE_PARS)
         except ValueError as e:
-            logging.exception(e)
+            logging.error(e)
             exit(1)
 
         if self.configuration.parameters.get(KEY_DEBUG):

@@ -7,7 +7,7 @@
   "properties": {
     "print_hello": {
       "type": "string",
-      "title": "Debug"
+      "title": "Print Hello"
     },
     "debug": {
       "type": "string",
