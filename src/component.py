@@ -4,11 +4,9 @@ Template Component main class.
 '''
 import csv
 import logging
-import os
 from datetime import datetime
-from pathlib import Path
 
-from keboola.component import CommonInterface
+from keboola.component.base import ComponentBase
 
 # configuration variables
 KEY_API_TOKEN = '#api_token'
@@ -25,39 +23,10 @@ REQUIRED_IMAGE_PARS = []
 APP_VERSION = '0.0.1'
 
 
-def get_local_data_path():
-    return Path(__file__).resolve().parent.parent.joinpath('data').as_posix()
-
-
-def get_data_folder_path():
-    data_folder_path = None
-    if not os.environ.get('KBC_DATADIR'):
-        data_folder_path = get_local_data_path()
-    return data_folder_path
-
-
-class Component(CommonInterface):
+class Component(ComponentBase):
     def __init__(self):
-        # for easier local project setup
-        data_folder_path = get_data_folder_path()
-        super().__init__(data_folder_path=data_folder_path)
-
-        try:
-            # validation of required parameters. Produces ValueError
-            self.validate_configuration(REQUIRED_PARAMETERS)
-            self.validate_image_parameters(REQUIRED_IMAGE_PARS)
-        except ValueError as e:
-            logging.exception(e)
-            exit(1)
-
-        if self.configuration.parameters.get(KEY_DEBUG):
-            self.set_debug_mode()
-
-    @staticmethod
-    def set_debug_mode():
-        logging.getLogger().setLevel(logging.DEBUG)
-        logging.info('Running version %s', APP_VERSION)
-        logging.info('Loading configuration...')
+        super().__init__(required_parameters=REQUIRED_PARAMETERS,
+                         required_image_parameters=REQUIRED_IMAGE_PARS)
 
     def run(self):
         '''
