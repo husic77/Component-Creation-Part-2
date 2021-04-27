@@ -2,8 +2,10 @@
 Template Component main class.
 
 '''
+import csv
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
 
 from keboola.component import CommonInterface
@@ -61,11 +63,35 @@ class Component(CommonInterface):
         '''
         Main execution code
         '''
-        params = self.configuration.parameters
 
         # ####### EXAMPLE TO REMOVE
+        params = self.configuration.parameters
+        # Access parameters in data/config.json
         if params.get(KEY_PRINT_HELLO):
             logging.info("Hello World")
+
+        # get last state data/in/state.json from previous run
+        previous_state = self.get_state_file()
+        logging.info(previous_state.get('some_state_parameter'))
+
+        # Create output table (Tabledefinition - just metadata)
+        table = self.create_out_table_definition('output.csv', incremental=True, primary_key=['timestamp'])
+
+        # get file path of the table (data/out/tables/Features.csv)
+        out_table_path = table.full_path
+        logging.info(out_table_path)
+
+        # DO whatever and save into out_table_path
+        with open(table.full_path, mode='wt', encoding='utf-8', newline='') as out_file:
+            writer = csv.DictWriter(out_file, fieldnames=['timestamp'])
+            writer.writeheader()
+            writer.writerow({"timestamp": datetime.now().isoformat()})
+
+        # Save table manifest (output.csv.manifest) from the tabledefinition
+        self.write_tabledef_manifest(table)
+
+        # Write new state - will be available next run
+        self.write_state_file({"some_state_parameter": "value"})
 
         # ####### EXAMPLE TO REMOVE END
 
