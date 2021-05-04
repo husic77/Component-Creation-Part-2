@@ -3,8 +3,20 @@ on: [ push ]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      APP_IMAGE: keboola-component
     steps:
       - uses: actions/checkout@v2
       - name: Build image
-        run: docker build . --tag=keboola-component
+        run: docker build . --tag=$APP_IMAGE
+      - name: Run Flake Lint
+        run: docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
+      - name: Unit Test
+        run: docker run $APP_IMAGE python -m unittest discover
 
+        # Push test tag
+#      - name: Pushing test image to repo. [tag=test]
+#        run: export REPOSITORY=`docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-repository $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP
+#      - run: docker tag $APP_IMAGE:latest $REPOSITORY:test
+#      - run: eval $(docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-login $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP
+#      - run: docker push $REPOSITORY:test
