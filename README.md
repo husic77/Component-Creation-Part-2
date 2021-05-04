@@ -4,42 +4,40 @@ Python template for KBC Component creation. Defines the default structure and al
 
 Use as a starting point when creating a new component.
 
-Example uses [keboola-python-util-lib](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/) library providing useful methods for KBC related tasks and boilerplate methods often needed by components, for more details see [documentation](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/README.md)
+Example uses [keboola.component](https://pypi.org/project/keboola.component) library providing useful methods for KBC related tasks 
+and boilerplate methods often needed by components, for more details see [documentation](https://github.com/keboola/python-component/blob/main/README.md)
+
+*NOTE: Previously the template was based on top of the deprecated [keboola-python-util-lib library](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/)*
 
 **Table of contents:**  
   
 [TOC]
 
 # Recommended component architecture
-It is recommended to use the [keboola-python-util-lib library](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/), 
+It is recommended to use the [keboola.component library](https://pypi.org/project/keboola.component), 
 for each component. Major advantage is that it reduces the boilerplate code replication, the developer can focus on core component logic 
 and not on boilerplate tasks. If anything is missing in the library, please fork and create a pull request with additional changes, 
 so we can all benefit from it
 
-**Base components on [KBCEnvHandler](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/env_handler.md?at=master)**
+**Base components on [CommonInterface](https://htmlpreview.github.io/?https://raw.githubusercontent.com/keboola/python-component/main/docs/api-html/component/interface.html#keboola.component.interface.CommonInterface)**
 
 - No need to write configuration processing and validation code each time
 - No need to setup logging environment manually
 - No need to write code to store manifests, write statefile, retrieve dates based on relative period, and many more.
 - The main focus can be the core component logic, which increases the code readability for new comers.
 
-**Base Client on [HtttpClientBase](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/client_base.md?at=master)**
+**Base Client on [HtttpClient](https://pypi.org/project/keboola.http-client/)**
 
 - No need to write HTTP request handling over and over again
 - Covers basic authentication, retry strategy, headers, default parameters
 
-**Process results using [result.py](https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/src/master/docs/result.md?at=master) package**
-
-- No need to use pandas
-- Enables basic json response flattening
-- Fixed headers, user values and more useful functionality
 
 ## Architecture using the template
 
 ![picture](docs/imgs/architecture.png)
 
 ## Example component
-This template contains functional example of an [extractor component](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/src/component.py), 
+This template contains functional example of an [hello-world component](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/src/component.py), 
 it can be run with [sample configuration](https://bitbucket.org/kds_consulting_team/kbc-python-template/src/master/data/) and it produces valid results. 
 It is advisable to use this structure as a base for new components. Especially the `component.py` module, which should only 
 contain the base logic necessary for communication with KBC interface, processing parameters, collecting results
@@ -55,18 +53,29 @@ rm -rf .git
 git init
 git remote add origin PATH_TO_YOUR_BB_REPO
 git add .
-git update-index --chmod=+x deploy.sh
-git update-index --chmod=+x scripts/update_dev_portal_properties.sh
 git commit -m 'initial'
 git push -u origin master
 ```
 
+**Method #2:**
+
+Copy the contents of the template folder into your clone empty repository
+
+```bash
+git clone PATH_TO_YOUR_BB_REPO my-new-component
+# now copy the contents of the template into the my-new-component dir
+cd my-new-component
+git add .
+git commit -m 'initial'
+git push -u origin master
+```
 
 # Setting up the CI
  - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
  - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
  
  In case it is not set on the account level, set also other required dev portal env variables:
+ 
  - `KBC_DEVELOPERPORTAL_PASSWORD` - service account password
  - `KBC_DEVELOPERPORTAL_USERNAME` - service account username
  - `KBC_DEVELOPERPORTAL_VENDOR` - dev portal vendor
@@ -91,9 +100,11 @@ This script is executed on any push or change in the master branch. It performs 
 the `./scripts/update_dev_portal_properties.sh` script is executed. 
 This script propagates all changes in the Component configuration files (component_config folder) to the Developer portal.
 Currently these Dev Portal configuration parameters are supported:
- - `configuration_schema.json`
- - `short_description.md`
- - `long_description.md`    
+
+ - `configSchema.json`
+ - `configRowSchema.json`
+ - `component_short_description.md`
+ - `component_long_description.md`    
 
 The choice to include this script directly in the master branch was made to simplify ad-hoc changes of the component configuration parameters. For instance if you wish to slightly modify the configuration schema without affecting the code itself, it is possible to simply push the changes directly into the master and these will be automatically propagated to the production without rebuilding the image itself. Solely Developer Portal configuration metadata is deployed at this stage.
 
@@ -112,6 +123,13 @@ The template automatically chooses between STDOUT and GELF logger based on the D
 To fully leverage the benefits such as outputting the `Stack Trace` into the log event detail (available by clicking on the log event) 
 log exceptions using `logger.exception(ex)`.
 
+**TIP:** When the logger verbosity is set to `verbose` you may leverage `extra` fields to log the detailed message in the detail of the log event by adding extra fields to you messages:
+
+```python
+logging.error(f'{error}. See log detail for full query. ',
+                         extra={"failed_query": json.dumps(query)})
+```
+
 Recommended [GELF logger setup](https://developers.keboola.com/extend/common-interface/logging/#setting-up) (Developer Portal) to allow debug mode logging:
 
 ```json
@@ -120,7 +138,7 @@ Recommended [GELF logger setup](https://developers.keboola.com/extend/common-int
     "100": "normal",
     "200": "normal",
     "250": "normal",
-    "300": "normal",
+    "300": "verbose",
     "400": "verbose",
     "500": "camouflage",
     "550": "camouflage",

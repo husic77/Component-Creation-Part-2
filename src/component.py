@@ -2,64 +2,70 @@
 Template Component main class.
 
 '''
-
+import csv
 import logging
-import os
-import sys
-from pathlib import Path
+from datetime import datetime
 
-from kbc.env_handler import KBCEnvHandler
+from keboola.component.base import ComponentBase, UserException
 
 # configuration variables
 KEY_API_TOKEN = '#api_token'
 KEY_PRINT_HELLO = 'print_hello'
 
-# #### Keep for debug
-KEY_DEBUG = 'debug'
-
-MANDATORY_PARS = [KEY_API_TOKEN, KEY_API_TOKEN]
-MANDATORY_IMAGE_PARS = []
-
-APP_VERSION = '0.0.1'
+# list of mandatory parameters => if some is missing,
+# component will fail with readable message on initialization.
+REQUIRED_PARAMETERS = [KEY_PRINT_HELLO]
+REQUIRED_IMAGE_PARS = []
 
 
-class Component(KBCEnvHandler):
+class Component(ComponentBase):
+    """
+        Extends base class for general Python components. Initializes the CommonInterface
+        and performs configuration validation.
 
-    def __init__(self, debug=False):
-        # for easier local project setup
-        default_data_dir = Path(__file__).resolve().parent.parent.joinpath('data').as_posix() \
-            if not os.environ.get('KBC_DATADIR') else None
+        For easier debugging the data folder is picked up by default from `../data` path,
+        relative to working directory.
 
-        KBCEnvHandler.__init__(self, MANDATORY_PARS, log_level=logging.DEBUG if debug else logging.INFO,
-                               data_path=default_data_dir)
-        # override debug from config
-        if self.cfg_params.get(KEY_DEBUG):
-            debug = True
-        if debug:
-            logging.getLogger().setLevel(logging.DEBUG)
-        logging.info('Running version %s', APP_VERSION)
-        logging.info('Loading configuration...')
+        If `debug` parameter is present in the `config.json`, the default logger is set to verbose DEBUG mode.
+    """
 
-        try:
-            self.validate_config(MANDATORY_PARS)
-            self.validate_image_parameters(MANDATORY_IMAGE_PARS)
-        except ValueError as e:
-            logging.exception(e)
-            exit(1)
-        # ####### EXAMPLE TO REMOVE
-        # intialize instance parameteres
-
-        # ####### EXAMPLE TO REMOVE END
+    def __init__(self):
+        super().__init__(required_parameters=REQUIRED_PARAMETERS,
+                         required_image_parameters=REQUIRED_IMAGE_PARS)
 
     def run(self):
         '''
         Main execution code
         '''
-        params = self.cfg_params  # noqa
 
         # ####### EXAMPLE TO REMOVE
+        params = self.configuration.parameters
+        # Access parameters in data/config.json
         if params.get(KEY_PRINT_HELLO):
             logging.info("Hello World")
+
+        # get last state data/in/state.json from previous run
+        previous_state = self.get_state_file()
+        logging.info(previous_state.get('some_state_parameter'))
+
+        # Create output table (Tabledefinition - just metadata)
+        table = self.create_out_table_definition('output.csv', incremental=True, primary_key=['timestamp'])
+
+        # get file path of the table (data/out/tables/Features.csv)
+        out_table_path = table.full_path
+        logging.info(out_table_path)
+
+        # DO whatever and save into out_table_path
+        with open(table.full_path, mode='wt', encoding='utf-8', newline='') as out_file:
+            writer = csv.DictWriter(out_file, fieldnames=['timestamp'])
+            writer.writeheader()
+            writer.writerow({"timestamp": datetime.now().isoformat()})
+
+        # Save table manifest (output.csv.manifest) from the tabledefinition
+        self.write_tabledef_manifest(table)
+
+        # Write new state - will be available next run
+        self.write_state_file({"some_state_parameter": "value"})
 
         # ####### EXAMPLE TO REMOVE END
 
@@ -68,13 +74,12 @@ class Component(KBCEnvHandler):
         Main entrypoint
 """
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        debug_arg = sys.argv[1]
-    else:
-        debug_arg = False
     try:
-        comp = Component(debug_arg)
+        comp = Component()
         comp.run()
-    except Exception as exc:
+    except UserException as exc:
         logging.exception(exc)
         exit(1)
+    except Exception as exc:
+        logging.exception(exc)
+        exit(2)

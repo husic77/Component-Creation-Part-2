@@ -1,0 +1,19 @@
+name: Build & Test
+
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build image
+      - uses: docker/build-push-action@v2
+        with:
+          tags: keboola-app:latest
+          push: false
+      - name: Run tests
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: keboola-app:latest
+          run: flake8 /code/ --config=/code/flake8.cfg
+
