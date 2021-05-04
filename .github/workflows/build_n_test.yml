@@ -1,19 +1,24 @@
 name: Build & Test
-
 on: [ push ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      APP_IMAGE: keboola-component
     steps:
+      - uses: actions/checkout@v2
       - name: Build image
-      - uses: docker/build-push-action@v2
-        with:
-          tags: keboola-app:latest
-          push: false
-      - name: Run tests
-      - uses: addnab/docker-run-action@v3
-        with:
-          image: keboola-app:latest
-          run: flake8 /code/ --config=/code/flake8.cfg
+        run: docker build . --tag=$APP_IMAGE
+      - name: Run Flake Lint
+        run: docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
+      - name: Unit Test
+        run: docker run $APP_IMAGE python -m unittest discover
 
+        # Push test tag, uncomment to enable
+#      - name: Pushing test image to repo. [tag=test]
+#        run: |
+#          docker pull quay.io/keboola/developer-portal-cli-v2:latest
+#          export REPOSITORY=`docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-repository $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP
+#          docker tag $APP_IMAGE:latest $REPOSITORY:test
+#          eval $(docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-login $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP
+#          docker push $REPOSITORY:test
