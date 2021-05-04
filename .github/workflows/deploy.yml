@@ -1,19 +1,36 @@
 name: Deploy to developer portal
 
+#on:
+#  release:
+#    types: [ created ]
+#    branches:
+#      - main
+#      - master
+
 on:
-  release:
-    types: [ created ]
+  push:
     branches:
       - main
       - master
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+    env:
+      APP_IMAGE: keboola-component
     steps:
       - uses: actions/checkout@v2
-      - name: Build and Test
-        uses: ./.github/actions/build_n_test
+      - name: Build image
+        run: docker build . --tag=$APP_IMAGE
+      - name: Run Flake Lint
+        run: docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
+      - name: Unit Test
+        run: docker run $APP_IMAGE python -m unittest discover
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
       - name: Deploy
         run: |
           docker pull quay.io/keboola/developer-portal-cli-v2:latest
