@@ -71,16 +71,17 @@ git push -u origin master
 ```
 
 # Setting up the CI
- - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
- - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
+ - Bitbucket: Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
+    - For Github: Check that the [workflows are enabled](https://docs.github.com/en/actions/managing-workflow-runs/disabling-and-enabling-a-workflow).
+    The actions are present in `.github/workflows/` folder. 
+ - Set `KBC_DEVELOPERPORTAL_APP` env variable (dev portal app id)
  
  In case it is not set on the account level, set also other required dev portal env variables:
  
  - `KBC_DEVELOPERPORTAL_PASSWORD` - service account password
  - `KBC_DEVELOPERPORTAL_USERNAME` - service account username
  - `KBC_DEVELOPERPORTAL_VENDOR` - dev portal vendor
- - `APP_IMAGE` - arbitrary tag name of the docker image e.g. “keboola-component”
- - `KBC_STORAGE_TOKEN` - in case you wish to run KBC automated tests
+ - `KBC_STORAGE_TOKEN` - (optional) in case you wish to run KBC automated tests
   
  
  ![picture](docs/imgs/ci_variable.png)
