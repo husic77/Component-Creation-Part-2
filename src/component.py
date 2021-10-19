@@ -6,7 +6,8 @@ import csv
 import logging
 from datetime import datetime
 
-from keboola.component.base import ComponentBase, UserException
+from keboola.component.base import ComponentBase
+from keboola.component.exceptions import UserException
 
 # configuration variables
 KEY_API_TOKEN = '#api_token'
@@ -62,7 +63,7 @@ class Component(ComponentBase):
             writer.writerow({"timestamp": datetime.now().isoformat()})
 
         # Save table manifest (output.csv.manifest) from the tabledefinition
-        self.write_tabledef_manifest(table)
+        self.write_manifest(table)
 
         # Write new state - will be available next run
         self.write_state_file({"some_state_parameter": "value"})
