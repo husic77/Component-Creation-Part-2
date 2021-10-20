@@ -23,6 +23,7 @@
     "print_hello": true,
     "debug": true
   },
+  "action": "run",
   "image_parameters": {
     "syrup_url": "https://syrup.keboola.com/"
   },
