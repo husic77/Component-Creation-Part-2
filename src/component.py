@@ -6,7 +6,8 @@ import csv
 import logging
 from datetime import datetime
 
-from keboola.component.base import ComponentBase, UserException
+from keboola.component.base import ComponentBase
+from keboola.component.exceptions import UserException
 
 # configuration variables
 KEY_API_TOKEN = '#api_token'
@@ -30,8 +31,7 @@ class Component(ComponentBase):
     """
 
     def __init__(self):
-        super().__init__(required_parameters=REQUIRED_PARAMETERS,
-                         required_image_parameters=REQUIRED_IMAGE_PARS)
+        super().__init__()
 
     def run(self):
         '''
@@ -39,6 +39,9 @@ class Component(ComponentBase):
         '''
 
         # ####### EXAMPLE TO REMOVE
+        # check for missing configuration parameters
+        self.validate_configuration_parameters(REQUIRED_PARAMETERS)
+        self.validate_image_parameters(REQUIRED_IMAGE_PARS)
         params = self.configuration.parameters
         # Access parameters in data/config.json
         if params.get(KEY_PRINT_HELLO):
@@ -62,7 +65,7 @@ class Component(ComponentBase):
             writer.writerow({"timestamp": datetime.now().isoformat()})
 
         # Save table manifest (output.csv.manifest) from the tabledefinition
-        self.write_tabledef_manifest(table)
+        self.write_manifest(table)
 
         # Write new state - will be available next run
         self.write_state_file({"some_state_parameter": "value"})
@@ -76,7 +79,8 @@ class Component(ComponentBase):
 if __name__ == "__main__":
     try:
         comp = Component()
-        comp.run()
+        # this triggers the run method by default and is controlled by the configuration.action parameter
+        comp.execute_action()
     except UserException as exc:
         logging.exception(exc)
         exit(1)
