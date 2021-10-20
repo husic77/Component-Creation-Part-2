@@ -31,8 +31,7 @@ class Component(ComponentBase):
     """
 
     def __init__(self):
-        super().__init__(required_parameters=REQUIRED_PARAMETERS,
-                         required_image_parameters=REQUIRED_IMAGE_PARS)
+        super().__init__()
 
     def run(self):
         '''
@@ -40,6 +39,9 @@ class Component(ComponentBase):
         '''
 
         # ####### EXAMPLE TO REMOVE
+        # check for missing configuration parameters
+        self.validate_configuration_parameters(REQUIRED_PARAMETERS)
+        self.validate_image_parameters(REQUIRED_IMAGE_PARS)
         params = self.configuration.parameters
         # Access parameters in data/config.json
         if params.get(KEY_PRINT_HELLO):
@@ -77,7 +79,8 @@ class Component(ComponentBase):
 if __name__ == "__main__":
     try:
         comp = Component()
-        comp.run()
+        # this triggers the run method by default and is controlled by the configuration.action parameter
+        comp.execute_action()
     except UserException as exc:
         logging.exception(exc)
         exit(1)
