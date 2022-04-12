@@ -1,68 +1,35 @@
-options:
-  docker: true
+# This is an example Starter pipeline configuration
+# Use a skeleton to build, test and deploy using manual and parallel steps
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+
+image: atlassian/default-image:3
 
 pipelines:
   default:
-    - step:
-        caches:
-          - docker
-        script:
-          - export APP_IMAGE=keboola-component
-          - docker build . --tag=$APP_IMAGE
-          - docker images
-          - docker -v
-          - docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
-          - echo "Running unit-tests..."
-          - docker run $APP_IMAGE python -m unittest discover
-          # push test image to ecr - uncomment for testing before deployment
-          - echo 'Pushing test image to repo. [tag=test]'
-          - export REPOSITORY=`docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-repository $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP`
-          - docker tag $APP_IMAGE:latest $REPOSITORY:test
-          - eval $(docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-login $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP)
-          - docker push $REPOSITORY:test
+    - parallel:
+      - step:
+          name: 'Build and Test'
+          script:
+            - echo "Your build and test goes here..."
+      - step:
+          name: 'Lint'
+          script:
+            - echo "Your linting goes here..."
+      - step:
+          name: 'Security scan'
+          script:
+            - echo "Your security scan goes here..."
 
-  branches:
-    master:
-      - step:
-          caches:
-            - docker
-          script:
-            - export APP_IMAGE=keboola-component
-            - docker build . --tag=$APP_IMAGE
-            - docker images
-            - docker -v
-            - docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
-            - echo "Running unit-tests..."
-            - docker run $APP_IMAGE python -m unittest discover
-            # push test image to ecr - uncomment for testing before deployment
-#            - echo 'Pushing test image to repo. [tag=test]'
-#            - export REPOSITORY=`docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-repository $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP`
-#            - docker tag $APP_IMAGE:latest $REPOSITORY:test
-#            - eval $(docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-login $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP)
-#            - docker push $REPOSITORY:test
-            - chmod +x ./scripts/update_dev_portal_properties.sh
-            - ./scripts/update_dev_portal_properties.sh
-  tags:
-    '*':
-      - step:
-          deployment: production
-          script:
-            - export APP_IMAGE=keboola-component
-            - docker build . --tag=$APP_IMAGE
-            - docker images
-            - docker run $APP_IMAGE flake8 /code/ --config=/code/flake8.cfg
-            - echo "Running unit-tests..."
-            - docker run $APP_IMAGE python -m unittest discover
-            - echo "Preparing KBC test image"
-            - docker pull quay.io/keboola/developer-portal-cli-v2:latest
-            # push test image to ECR - uncomment when initialised
-            # - export REPOSITORY=`docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-repository $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP`
-            # - docker tag $APP_IMAGE:latest $REPOSITORY:test
-            # - eval $(docker run --rm -e KBC_DEVELOPERPORTAL_USERNAME -e KBC_DEVELOPERPORTAL_PASSWORD -e KBC_DEVELOPERPORTAL_URL quay.io/keboola/developer-portal-cli-v2:latest ecr:get-login $KBC_DEVELOPERPORTAL_VENDOR $KBC_DEVELOPERPORTAL_APP)
-            # - docker push $REPOSITORY:test
-            # - docker run --rm -e KBC_STORAGE_TOKEN quay.io/keboola/syrup-cli:latest run-job $KBC_DEVELOPERPORTAL_APP $BASE_KBC_CONFIG test
-            # - docker run --rm -e KBC_STORAGE_TOKEN quay.io/keboola/syrup-cli:latest run-job $KBC_DEVELOPERPORTAL_APP $KBC_CONFIG_1 test
-            - chmod +x ./scripts/update_dev_portal_properties.sh
-            - chmod +x ./deploy.sh
-            - ./scripts/update_dev_portal_properties.sh
-            - ./deploy.sh
+    # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
+    - step:
+        name: 'Deployment to Staging'
+        deployment: staging
+        script:
+          - echo "Your deployment to staging script goes here..."
+    - step:
+        name: 'Deployment to Production'
+        deployment: production
+        trigger: 'manual'
+        script:
+          - echo "Your deployment to production script goes here..."
